@@ -1,0 +1,87 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:7777
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+
+  backend:
+    build: ./backend
+    ports:
+      - "7777:7777"
+    environment:
+      - DATABASE_URL=mysql://root:password@db:3306/stockapp
+      - SECRET_KEY=${SECRET_KEY}
+      - FINNHUB_API_KEY=${FINNHUB_API_KEY}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    command: >
+      uvicorn app.main:app
+      --host 0.0.0.0 --port 7777 --reload
+
+  db:
+    image: mysql:8
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=stockapp
+    ports:
+      - "4444:3306"  
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend-test:
+    build: ./backend
+    environment:
+      - DATABASE_URL=mysql://root:password@test-db:3306/stockapp_test
+      - DATABASE_URL_TEST=mysql://root:password@test-db:3306/stockapp_test
+      - SECRET_KEY=test-secret-key
+      - FINNHUB_API_KEY=test-api-key
+    depends_on:
+      test-db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    command: pytest -v
+    profiles: ["test"]
+
+  test-db:
+    image: mysql:8
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=stockapp_test
+    ports:
+      - "4445:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    profiles: ["test"]
+
+  frontend-test:
+    build: ./frontend
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:7777
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm test
+    profiles: ["test"]
+
+volumes:
+  mysql_data:
