@@ -13,7 +13,7 @@ A full-stack web application for checking real-time stock prices with user authe
 1. **Build & Run**
 
    ```bash
-   docker compose up --build
+   docker compose up -d
    ```
 
 2. **Services**
@@ -21,14 +21,6 @@ A full-stack web application for checking real-time stock prices with user authe
    - **Database:** MySQL with `stockapp` schema on port `4444` and test database on port `4445`
    - **Backend:** FastAPI server on port `7777`  
    - **Frontend:** Next.js application on port `3000`  
-
-## Database Setup
-
-FastAPI automatically creates fresh tables on startup using:
-
-```python
-Base.metadata.create_all()
-```
 
 ## Running Tests
 
