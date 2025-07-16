@@ -41,7 +41,7 @@ docker compose --profile test run --rm backend-test
 ```
 
 ### Frontend Tests
-
+**Note:** Make sure your app (frontend, backend, and any services) is up and running via `docker-compose up -d` before you run these tests.
 #### Unit Tests (Jest)
 
 ```bash
@@ -51,7 +51,7 @@ docker compose run --rm frontend npm test
 _Covers: authentication context, form validation, user interactions._
 
 #### E2E Tests (Playwright)
-**Note:** Make sure your app (frontend, backend, and any services) is up and running via `docker-compose up -d` before you run these tests.
+
 
 ```bash
 cd frontend && npm run e2e
