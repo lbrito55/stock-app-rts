@@ -57,4 +57,4 @@ _Covers: authentication context, form validation, user interactions._
 cd frontend && npm run e2e
 ```
 
-_Covers: complete user workflows, authentication flow, stock lookup, cross-browser compatibility._
+_Covers: complete user workflows, authentication flow, stock lookup._
