@@ -25,9 +25,9 @@ services:
         condition: service_healthy
     volumes:
       - ./backend:/app
+    restart: unless-stopped
     command: >
-      uvicorn app.main:app
-      --host 0.0.0.0 --port 7777 --reload
+      sh -c "sleep 10 && uvicorn app.main:app --host 0.0.0.0 --port 7777 --reload"
 
   db:
     image: mysql:8
@@ -39,10 +39,11 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-ppassword", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
 
   backend-test:
     build: ./backend
